@@ -1,0 +1,10 @@
+shared_library("ispcTexComp") {
+    include_dir = [ "ispc_texcomp" ]
+    sources = [
+        "ispc_texcomp/ispc_texcomp.cpp",
+        "ispc_texcomp/ispc_texcomp_astc.cpp",
+        "ispc_texcomp/kernel_astc.ispc",
+        "ispc_texcomp/ispc_texcomp.def",
+        "ispc_texcomp/kernel.ispc"
+    ]
+}

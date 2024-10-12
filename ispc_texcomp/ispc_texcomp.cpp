@@ -21,7 +21,57 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "ispc_texcomp.h"
-#include "kernel_ispc.h"
+
+#ifdef _WIN32
+#define ISPCTEXCOMP_API __declspec(dllexport)
+#endif
+
+namespace ispc
+{
+	struct rgba_surface
+	{
+		uint8_t* ptr;
+		int width, height, stride;
+	};
+
+	struct bc7_enc_settings
+	{
+		bool mode_selection[4];
+		int refineIterations[8];
+
+		bool skip_mode2;
+		int fastSkipTreshold_mode1;
+		int fastSkipTreshold_mode3;
+		int fastSkipTreshold_mode7;
+
+		int mode45_channel0;
+		int refineIterations_channel;
+
+		int channels;
+	};
+
+	struct bc6h_enc_settings
+	{
+		bool slow_mode;
+		bool fast_mode;
+		int refineIterations_1p;
+		int refineIterations_2p;
+		int fastSkipTreshold;
+	};
+
+	struct etc_enc_settings
+	{
+		int fastSkipTreshold;
+	};
+
+	extern "C" void CompressBlocksBC1_ispc(rgba_surface*, uint8_t*);
+	extern "C" void CompressBlocksBC3_ispc(ispc::rgba_surface*, uint8_t*);
+	extern "C" void CompressBlocksBC4_ispc(ispc::rgba_surface*, uint8_t*);
+	extern "C" void CompressBlocksBC5_ispc(ispc::rgba_surface*, uint8_t*);
+	extern "C" void CompressBlocksBC7_ispc(ispc::rgba_surface*, uint8_t*, ispc::bc7_enc_settings*);
+	extern "C" void CompressBlocksBC6H_ispc(ispc::rgba_surface*, uint8_t*, ispc::bc6h_enc_settings*);
+	extern "C" void CompressBlocksETC1_ispc(ispc::rgba_surface*, uint8_t*, ispc::etc_enc_settings*);
+}
 #include <memory.h> // memcpy
 
 void GetProfile_ultrafast(bc7_enc_settings* settings)

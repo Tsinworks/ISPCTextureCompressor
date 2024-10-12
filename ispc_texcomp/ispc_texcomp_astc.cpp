@@ -14,7 +14,57 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include "ispc_texcomp.h"
-#include "kernel_astc_ispc.h"
+
+namespace ispc
+{
+    struct astc_block
+    {
+        int width;
+        int height;
+        uint8_t dual_plane;
+        int weight_range;
+        uint8_t weights[64];
+        int color_component_selector;
+
+        int partitions;
+        int partition_id;
+        int color_endpoint_pairs;
+        int channels;
+        int color_endpoint_modes[4];
+        int endpoint_range;
+        uint8_t endpoints[18];
+    };
+
+    struct astc_enc_settings
+    {
+        int block_width;
+        int block_height;
+        int channels;
+
+        int fastSkipTreshold;
+        int refineIterations;
+    };
+
+    struct rgba_surface
+    {
+        uint8_t* ptr;
+        int width, height, stride;
+    };
+
+    struct astc_enc_context
+    {
+        // uniform parameters
+        int width;
+        int height;
+        int channels;
+        bool dual_plane;
+        int partitions;
+        int color_endpoint_pairs;
+    };
+    extern "C" void astc_encode_ispc(struct rgba_surface* src, float* block_scores, uint8_t* dst, uint64_t* list, struct astc_enc_context* list_context, struct astc_enc_settings* settings);
+    extern "C" void astc_rank_ispc(struct rgba_surface* src, int32_t xx, int32_t yy, uint32_t* mode_buffer, struct astc_enc_settings* settings);
+    extern "C" int32_t get_programCount();
+}
 #include <cassert>
 #include <cstring>
 #include <algorithm>
